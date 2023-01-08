@@ -1,4 +1,5 @@
 from pytube import YouTube
+from pytube import Playlist
 import requests
 import subprocess
 import eyed3
@@ -42,6 +43,7 @@ def load_metadata_to_mp3(file_mp3, artist, title):
     audio_file.tag.images.set(3, open('img.jpg', 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
     os.rename(file_mp3, f'{artist} - {title}.mp3')
+    return f'{artist} - {title}.mp3'
 
 
 def del_files():
@@ -55,7 +57,7 @@ def del_files():
 def main():
     while True:
         try:
-            url = input('Enter the link of video or key words for searching (q - exit): ')
+            url = input('Enter the link of video or playlist (q - exit): ')
             if url == 'q':
                 print("See you soon")
                 break
@@ -65,10 +67,22 @@ def main():
                 print("Converting video to audio...")
                 convert_video_to_audio_ffmpeg(VIDEO_NAME)
                 print("Loading metadata to audio...")
-                load_metadata_to_mp3(AUDIO_NAME, author, title)
+                music_file = load_metadata_to_mp3(AUDIO_NAME, author, title)
                 print("Deleting other files...")
                 del_files()
-                print("Done")
+                print(f"Done: {music_file}")
+            elif 'playlist' in url:
+                videos = Playlist(url)
+                for video_url in videos.video_urls:
+                    print("Downloading video...")
+                    author, title = download_video(video_url)
+                    print("Converting video to audio...")
+                    convert_video_to_audio_ffmpeg(VIDEO_NAME)
+                    print("Loading metadata to audio...")
+                    music_file = load_metadata_to_mp3(AUDIO_NAME, author, title)
+                    print("Deleting other files...")
+                    del_files()
+                    print(f"Done: {music_file}")
             else:
                 print("Enter the link of video, please...")
                 continue
