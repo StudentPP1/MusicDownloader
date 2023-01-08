@@ -5,8 +5,9 @@ import subprocess
 import eyed3
 import os
 
-VIDEO_NAME = 'video.mp4'
-AUDIO_NAME = 'video.mp3'
+VIDEO_NAME = "video.mp4"
+AUDIO_NAME = "video.mp3"
+PATH = "Loaded music\\"
 
 
 def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
@@ -26,13 +27,16 @@ def download_video(url):
     author = yt.author
     if author in title:
         title = title.replace(author, '').strip()
-    video_id = url[url.index("=") + 1:url.index("&")]
+    if "&" in url:
+        video_id = url[url.index("=") + 1:url.index("&")]
+    else:
+        video_id = url[url.index("=") + 1:]
     with open("img.jpg", 'wb') as f:
         img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
         f.write(img)
 
-    audio_best = streams.filter(only_audio=True).desc().first()
-    audio_best.download(filename=VIDEO_NAME)
+    video = streams.filter(file_extension='mp4').desc().first()
+    video.download(PATH, filename=VIDEO_NAME)
     return author, title
 
 
@@ -42,16 +46,17 @@ def load_metadata_to_mp3(file_mp3, artist, title):
     audio_file.tag.title = title
     audio_file.tag.images.set(3, open('img.jpg', 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
-    os.rename(file_mp3, f'{artist} - {title}.mp3')
-    return f'{artist} - {title}.mp3'
+    os.rename(f"{file_mp3}", f'{PATH}{artist} - {title}.mp3')
+    return f'{PATH}{artist} - {title}.mp3'
 
 
 def del_files():
     for i in os.listdir():
         if i.endswith('.jpg'):
             os.remove(i)
-        elif i.endswith('.mp4'):
-            os.remove(i)
+    for i in os.listdir(PATH):
+        if i.endswith('.mp4'):
+            os.remove(PATH+i)
 
 
 def main():
@@ -61,30 +66,33 @@ def main():
             if url == 'q':
                 print("See you soon")
                 break
-            elif 'https://www.youtube.com/watch?' in url:
+            elif url.startswith('https://www.youtube.com/watch?'):
                 print("Downloading video...")
                 author, title = download_video(url)
                 print("Converting video to audio...")
-                convert_video_to_audio_ffmpeg(VIDEO_NAME)
+                convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
                 print("Loading metadata to audio...")
-                music_file = load_metadata_to_mp3(AUDIO_NAME, author, title)
+                music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, author, title)
                 print("Deleting other files...")
                 del_files()
                 print(f"Done: {music_file}")
-            elif 'playlist' in url:
+            elif url.startswith('https://www.youtube.com/playlist?'):
+                print("Getting playlist...")
                 videos = Playlist(url)
-                for video_url in videos.video_urls:
-                    print("Downloading video...")
+                video_urls = [video_url for video_url in videos.video_urls]
+                for video_url in video_urls:
+                    log = f"{video_urls.index(video_url) + 1}/{len(video_urls)}"
+                    print(f"Downloading {log} video...")
                     author, title = download_video(video_url)
-                    print("Converting video to audio...")
-                    convert_video_to_audio_ffmpeg(VIDEO_NAME)
+                    print(f"Converting {log} video to audio...")
+                    convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
                     print("Loading metadata to audio...")
-                    music_file = load_metadata_to_mp3(AUDIO_NAME, author, title)
+                    music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, author, title)
                     print("Deleting other files...")
                     del_files()
                     print(f"Done: {music_file}")
             else:
-                print("Enter the link of video, please...")
+                print("Enter the link of video or playlist, please...")
                 continue
         except Exception as ex:
             print(ex)
