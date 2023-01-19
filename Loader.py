@@ -4,6 +4,7 @@ import requests
 import subprocess
 import eyed3
 import os
+import re
 
 VIDEO_NAME = "video.mp4"
 AUDIO_NAME = "video.mp3"
@@ -23,8 +24,8 @@ def download_video(url):
     yt = YouTube(url)
     streams = yt.streams
 
-    title = yt.title.replace('-', '')
-    author = yt.author
+    title = re.sub(r"[^А-Яа-яA-Za-z0-9]", '', yt.title)
+    author = re.sub(r"[^А-Яа-яA-Za-z0-9]", '', yt.author)
     if author in title:
         title = title.replace(author, '').strip()
     if "&" in url:
