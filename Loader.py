@@ -24,8 +24,8 @@ def download_video(url):
     yt = YouTube(url)
     streams = yt.streams
 
-    title = re.sub(r"[^А-Яа-яA-Za-z0-9]", '', yt.title)
-    author = re.sub(r"[^А-Яа-яA-Za-z0-9]", '', yt.author)
+    title = re.sub(r"[^А-Яа-яA-Za-z0-9 ]", '', yt.title).strip()
+    author = re.sub(r"[^А-Яа-яA-Za-z0-9 ]", '', yt.author).strip()
     if author in title:
         title = title.replace(author, '').strip()
     if "&" in url:
