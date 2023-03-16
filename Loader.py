@@ -6,9 +6,9 @@ import eyed3
 import os
 import re
 
-VIDEO_NAME = "video.mp4"
-AUDIO_NAME = "video.mp3"
-PATH = "Loaded music\\"
+VIDEO_NAME = r"E:\Projects\Python\LoadYouTube\video.mp4"
+AUDIO_NAME = r"E:\Projects\Python\LoadYouTube\video.mp3"
+PATH = "E:\\Projects\\Python\\LoadYouTube\\Loaded music\\"
 
 
 def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
@@ -46,7 +46,7 @@ def load_metadata_to_mp3(file_mp3, artist, title):
     audio_file = eyed3.load(file_mp3)
     audio_file.tag.artist = artist
     audio_file.tag.title = title
-    audio_file.tag.images.set(3, open('img.jpg', 'rb').read(), 'image/jpeg')
+    audio_file.tag.images.set(3, open(r"E:\Projects\Python\LoadYouTube\img.jpg", 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
     os.rename(f"{file_mp3}", f'{PATH}{artist} - {title}.mp3')
     return f'{PATH}{artist} - {title}.mp3'
@@ -92,7 +92,7 @@ def main():
                     music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, author, title)
                     print("Deleting other files...")
                     del_files()
-                    print(f"Done: {music_file}")
+                    print(f"Done: {PATH}{music_file}")
             else:
                 print("Enter the link of video or playlist, please...")
                 continue
