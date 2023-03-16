@@ -6,8 +6,8 @@ import eyed3
 import os
 import re
 
-VIDEO_NAME = r"E:\Projects\Python\LoadYouTube\video.mp4"
-AUDIO_NAME = r"E:\Projects\Python\LoadYouTube\video.mp3"
+VIDEO_NAME = "video.mp4"
+AUDIO_NAME = "video.mp3"
 PATH = "E:\\Projects\\Python\\LoadYouTube\\Loaded music\\"
 
 
