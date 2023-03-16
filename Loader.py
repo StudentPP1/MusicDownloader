@@ -33,7 +33,7 @@ def download_video(url):
         video_id = url[url.index("=") + 1:url.index("&")]
     else:
         video_id = url[url.index("=") + 1:]
-    with open("img.jpg", 'wb') as f:
+    with open(r"E:\Projects\Python\LoadYouTube\img.jpg", 'wb') as f:
         img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
         f.write(img)
 
