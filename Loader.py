@@ -5,6 +5,9 @@ import subprocess
 import eyed3
 import os
 import re
+# pip install pytube3
+# python -m pip install --upgrade pytube
+# python -m pip install git+https://github.com/nficano/pytube
 
 VIDEO_NAME = "video.mp4"
 AUDIO_NAME = "video.mp3"
@@ -26,9 +29,7 @@ def download_video(url):
     streams = yt.streams
 
     title = re.sub(r"[^А-Яа-яA-Za-z0-9 ]", '', yt.title).strip()
-    author = re.sub(r"[^А-Яа-яA-Za-z0-9 ]", '', yt.author).strip()
-    if author in title:
-        title = title.replace(author, '').strip()
+
     if "&" in url:
         video_id = url[url.index("=") + 1:url.index("&")]
     else:
@@ -39,17 +40,16 @@ def download_video(url):
 
     video = streams.filter(file_extension='mp4').desc().first()
     video.download(PATH, filename=VIDEO_NAME)
-    return author, title
+    return title
 
 
-def load_metadata_to_mp3(file_mp3, artist, title):
+def load_metadata_to_mp3(file_mp3, title):
     audio_file = eyed3.load(file_mp3)
-    audio_file.tag.artist = artist
     audio_file.tag.title = title
     audio_file.tag.images.set(3, open(r"E:\Projects\Python\LoadYouTube\img.jpg", 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
-    os.rename(f"{file_mp3}", f'{PATH}{artist} - {title}.mp3')
-    return f'{PATH}{artist} - {title}.mp3'
+    os.rename(f"{file_mp3}", f'{PATH}{title}.mp3')
+    return f'{PATH}{title}.mp3'
 
 
 def del_files():
@@ -70,11 +70,11 @@ def main():
                 break
             elif url.startswith('https://www.youtube.com/watch?'):
                 print("Downloading video...")
-                author, title = download_video(url)
+                title = download_video(url)
                 print("Converting video to audio...")
                 convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
                 print("Loading metadata to audio...")
-                music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, author, title)
+                music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, title)
                 print("Deleting other files...")
                 del_files()
                 print(f"Done: {music_file}")
@@ -85,11 +85,11 @@ def main():
                 for video_url in video_urls:
                     log = f"{video_urls.index(video_url) + 1}/{len(video_urls)}"
                     print(f"Downloading {log} video...")
-                    author, title = download_video(video_url)
+                    title = download_video(video_url)
                     print(f"Converting {log} video to audio...")
                     convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
                     print("Loading metadata to audio...")
-                    music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, author, title)
+                    music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, title)
                     print("Deleting other files...")
                     del_files()
                     print(f"Done: {PATH}{music_file}")
