@@ -1,105 +1,102 @@
-from pytube import YouTube
-from pytube import Playlist
-import requests
-import subprocess
-import eyed3
 import os
+import subprocess
+import yt_dlp
+import eyed3
+import requests
 import re
-# pip install pytube3
-# python -m pip install --upgrade pytube
-# python -m pip install git+https://github.com/nficano/pytube
+from pytube import Playlist
+import shutil
+from os import path
 
-VIDEO_NAME = "video.mp4"
-AUDIO_NAME = "video.mp3"
-PATH = "E:\\Projects\\Python\\LoadYouTube\\Loaded music\\"
-
-
-def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
-    """Converts video to audio directly using `ffmpeg` command
-    with the help of subprocess module"""
-    filename, ext = os.path.splitext(video_file)
-    subprocess.call(["E:/Projects/FFmpeg/ffmpeg-20140905-git-720c21d-win32-static/bin/ffmpeg.exe",
-                     "-y", "-i", video_file, f"{filename}.{output_ext}"],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.STDOUT)
+ydl_opts = {'format': 'bestvideo+bestaudio/best',
+            "ffmpeg_location": r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe"}
+destination_path = "Music"
 
 
 def download_video(url):
-    yt = YouTube(url)
-    streams = yt.streams
-
-    title = re.sub(r"[^А-Яа-яA-Za-z0-9 ]", '', yt.title).strip()
-
-    if "&" in url:
-        video_id = url[url.index("=") + 1:url.index("&")]
+    if "&" in url[0]:
+        video_id = url[0][url[0].index("=") + 1:url[0].index("&")]
     else:
-        video_id = url[url.index("=") + 1:]
-    with open(r"E:\Projects\Python\LoadYouTube\img.jpg", 'wb') as f:
+        video_id = url[0][url[0].index("=") + 1:]
+
+    with open("img.jpg", 'wb') as f:
         img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
         f.write(img)
 
-    video = streams.filter(file_extension='mp4').desc().first()
-    video.download(PATH, filename=VIDEO_NAME)
-    return title
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download(url)
 
 
 def load_metadata_to_mp3(file_mp3, title):
     audio_file = eyed3.load(file_mp3)
     audio_file.tag.title = title
-    audio_file.tag.images.set(3, open(r"E:\Projects\Python\LoadYouTube\img.jpg", 'rb').read(), 'image/jpeg')
+    audio_file.tag.images.set(3, open("img.jpg", 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
-    os.rename(f"{file_mp3}", f'{PATH}{title}.mp3')
-    return f'{PATH}{title}.mp3'
+    os.rename(f"{file_mp3}", f'{title}.mp3')
+    return f'{title}.mp3'
+
+
+def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
+    filename, ext = os.path.splitext(video_file)
+    subprocess.call([r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe", "-y", "-i", video_file,
+                     f"{filename}.{output_ext}"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 
 def del_files():
-    for i in os.listdir():
-        if i.endswith('.jpg'):
-            os.remove(i)
-    for i in os.listdir(PATH):
-        if i.endswith('.mp4'):
-            os.remove(PATH+i)
+    for f in os.listdir():
+        if f.endswith('.jpg') or f.endswith('.mp4') or f.endswith('.webm'):
+            os.remove(f)
+
+
+def download_mp3_from_video(url):
+    print("Downloading video...")
+
+    download_video([url])
+    ready_to_convert = False
+    download_file = None
+
+    while not ready_to_convert:
+        for file in os.listdir():
+            if file.endswith(".webm") or file.endswith(".mp4"):
+                ready_to_convert = True
+                download_file = file
+
+    print("Converting video to audio...")
+    convert_video_to_audio_ffmpeg(download_file, output_ext="mp3")
+
+    print("Loading metadata to audio...")
+    file_name = download_file.replace(".webm", ".mp3").replace(".mp4", ".mp3")
+    title = re.sub(r'\[.+\]', '', file_name.replace(".mp3", "")).strip()
+
+    audio = load_metadata_to_mp3(file_name, title)
+
+    print("Deleting other files...")
+    del_files()
+
+    location = shutil.move(audio, f"{destination_path}/{audio}")
+
+    print(f"Done: {location}")
 
 
 def main():
-    while True:
-        try:
-            url = input('Enter the link of video or playlist (q - exit): ')
-            if url == 'q':
-                print("See you soon")
-                break
-            elif url.startswith('https://www.youtube.com/watch?'):
-                print("Downloading video...")
-                title = download_video(url)
-                print("Converting video to audio...")
-                convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
-                print("Loading metadata to audio...")
-                music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, title)
-                print("Deleting other files...")
-                del_files()
-                print(f"Done: {music_file}")
-            elif url.startswith('https://www.youtube.com/playlist?'):
-                print("Getting playlist...")
-                videos = Playlist(url)
-                video_urls = [video_url for video_url in videos.video_urls]
-                for video_url in video_urls:
-                    log = f"{video_urls.index(video_url) + 1}/{len(video_urls)}"
-                    print(f"Downloading {log} video...")
-                    title = download_video(video_url)
-                    print(f"Converting {log} video to audio...")
-                    convert_video_to_audio_ffmpeg(PATH + VIDEO_NAME)
-                    print("Loading metadata to audio...")
-                    music_file = load_metadata_to_mp3(PATH + AUDIO_NAME, title)
-                    print("Deleting other files...")
-                    del_files()
-                    print(f"Done: {PATH}{music_file}")
-            else:
-                print("Enter the link of video or playlist, please...")
-                continue
-        except Exception as ex:
-            print(ex)
-            print("Sorry... Try again")
+    url = input("Enter the link of video or playlist (q - exit): ")
+    if not path.exists(destination_path):
+        os.mkdir(destination_path)
+
+    if url == 'q':
+        print("See you soon")
+
+    elif url.startswith('https://www.youtube.com/watch?'):
+        download_mp3_from_video(url)
+
+    elif url.startswith('https://www.youtube.com/playlist?'):
+        print("Getting playlist...")
+        videos = Playlist(url)
+        video_urls = [video_url for video_url in videos.video_urls]
+        for video_url in video_urls:
+            download_mp3_from_video(video_url)
+            print(f"Done: {video_urls.index(video_url) + 1}/{len(video_urls)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
