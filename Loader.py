@@ -11,6 +11,7 @@ from os import path
 ydl_opts = {'format': 'bestvideo+bestaudio/best',
             "ffmpeg_location": r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe"}
 destination_path = "Music"
+PATH = "E:\\Projects\\Python\\LoaderYouTube\\"
 
 
 def download_video(url):
@@ -19,7 +20,7 @@ def download_video(url):
     else:
         video_id = url[0][url[0].index("=") + 1:]
 
-    with open("img.jpg", 'wb') as f:
+    with open(f"{PATH}img.jpg", 'wb') as f:
         img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
         f.write(img)
 
@@ -30,9 +31,9 @@ def download_video(url):
 def load_metadata_to_mp3(file_mp3, title):
     audio_file = eyed3.load(file_mp3)
     audio_file.tag.title = title
-    audio_file.tag.images.set(3, open("img.jpg", 'rb').read(), 'image/jpeg')
+    audio_file.tag.images.set(3, open(f"{PATH}img.jpg", 'rb').read(), 'image/jpeg')
     audio_file.tag.save()
-    os.rename(f"{file_mp3}", f'{title}.mp3')
+    os.rename(f"{PATH}{file_mp3}", f'{PATH}{title}.mp3')
     return f'{title}.mp3'
 
 
@@ -62,7 +63,7 @@ def download_mp3_from_video(url):
                 download_file = file
 
     print("Converting video to audio...")
-    convert_video_to_audio_ffmpeg(download_file, output_ext="mp3")
+    convert_video_to_audio_ffmpeg(PATH + download_file, output_ext="mp3")
 
     print("Loading metadata to audio...")
     file_name = download_file.replace(".webm", ".mp3").replace(".mp4", ".mp3")
@@ -73,7 +74,7 @@ def download_mp3_from_video(url):
     print("Deleting other files...")
     del_files()
 
-    location = shutil.move(audio, f"{destination_path}/{audio}")
+    location = shutil.move(PATH + audio, f"{destination_path}\\{audio}")
 
     print(f"Done: {location}")
 
