@@ -10,9 +10,8 @@ from os import path
 
 ydl_opts = {'format': 'bestvideo+bestaudio/best',
             "ffmpeg_location": r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe"}
-destination_path = "Music"
 PATH = "E:\\Projects\\Python\\LoaderYouTube\\"
-
+destination_path = "Music"
 
 def download_video(url):
     if "&" in url[0]:
@@ -83,8 +82,8 @@ def main():
     while True:
         try:
             url = input("Enter the link of video or playlist (q - exit): ")
-            if not path.exists(destination_path):
-                os.mkdir(destination_path)
+            if not path.exists(PATH + destination_path):
+                os.mkdir(PATH + destination_path)
 
             if url == 'q':
                 print("See you soon")
