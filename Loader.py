@@ -79,23 +79,28 @@ def download_mp3_from_video(url):
 
 
 def main():
-    url = input("Enter the link of video or playlist (q - exit): ")
-    if not path.exists(destination_path):
-        os.mkdir(destination_path)
+    while True:
+        try:
+            url = input("Enter the link of video or playlist (q - exit): ")
+            if not path.exists(destination_path):
+                os.mkdir(destination_path)
 
-    if url == 'q':
-        print("See you soon")
+            if url == 'q':
+                print("See you soon")
+                break
 
-    elif url.startswith('https://www.youtube.com/watch?'):
-        download_mp3_from_video(url)
+            elif url.startswith('https://www.youtube.com/watch?'):
+                download_mp3_from_video(url)
 
-    elif url.startswith('https://www.youtube.com/playlist?'):
-        print("Getting playlist...")
-        videos = Playlist(url)
-        video_urls = [video_url for video_url in videos.video_urls]
-        for video_url in video_urls:
-            download_mp3_from_video(video_url)
-            print(f"Done: {video_urls.index(video_url) + 1}/{len(video_urls)}")
+            elif url.startswith('https://www.youtube.com/playlist?'):
+                print("Getting playlist...")
+                videos = Playlist(url)
+                video_urls = [video_url for video_url in videos.video_urls]
+                for video_url in video_urls:
+                    download_mp3_from_video(video_url)
+                    print(f"Done: {video_urls.index(video_url) + 1}/{len(video_urls)}")
+        except Exception as ex:
+            print(f"Sorry, loader crashed: {ex}")
 
 
 if __name__ == "__main__":
