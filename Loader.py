@@ -13,6 +13,7 @@ ydl_opts = {'format': 'bestvideo+bestaudio/best',
 PATH = "E:\\Projects\\Python\\LoaderYouTube\\"
 destination_path = "Music"
 
+
 def download_video(url):
     if "&" in url[0]:
         video_id = url[0][url[0].index("=") + 1:url[0].index("&")]
