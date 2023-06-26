@@ -1,9 +1,4 @@
-.idea
-*.iml
-out
-gen
-.exe
-.jpg
 /Music
-/dist
-/build
+/*.ico
+/.idea/
+/venv/
