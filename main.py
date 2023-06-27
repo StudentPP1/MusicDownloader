@@ -38,7 +38,7 @@ def load_metadata_to_mp3(file_mp3, title):
 
 def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
     filename, ext = os.path.splitext(video_file)
-    subprocess.call([r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe", "-y", "-i", video_file,
+    subprocess.call([ydl_opts["ffmpeg_location"], "-y", "-i", video_file,
                      f"{filename}.{output_ext}"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 
