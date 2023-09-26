@@ -8,6 +8,8 @@ from pytube import Playlist
 import shutil
 from os import path
 
+# If you have problem with yt-dlp try: pip install yt-dlp --upgrade
+
 ydl_opts = {'format': 'bestvideo+bestaudio/best',
             "ffmpeg_location": r"C:\ffmpeg\ffmpeg-2023-05-11-git-ceb050427c-full_build\bin\ffmpeg.exe"}
 destination_path = "Music"
@@ -44,7 +46,7 @@ def convert_video_to_audio_ffmpeg(video_file, output_ext="mp3"):
 
 def del_files():
     for f in os.listdir():
-        if f.endswith('.jpg') or f.endswith('.mp4') or f.endswith('.webm'):
+        if f.endswith('.jpg') or f.endswith('.mp4') or f.endswith('.webm') or f.endswith('.mkv'):
             os.remove(f)
 
 
@@ -57,7 +59,7 @@ def download_mp3_from_video(url):
 
     while not ready_to_convert:
         for file in os.listdir():
-            if file.endswith(".webm") or file.endswith(".mp4"):
+            if file.endswith(".webm") or file.endswith(".mp4") or file.endswith(".mkv"):
                 ready_to_convert = True
                 download_file = file
 
@@ -65,7 +67,7 @@ def download_mp3_from_video(url):
     convert_video_to_audio_ffmpeg(download_file, output_ext="mp3")
 
     print("Loading metadata to audio...")
-    file_name = download_file.replace(".webm", ".mp3").replace(".mp4", ".mp3")
+    file_name = download_file.replace(".webm", ".mp3").replace(".mp4", ".mp3").replace(".mkv", ".mp3")
     title = re.sub(r'\[.+\]', '', file_name.replace(".mp3", "")).strip()
 
     audio = load_metadata_to_mp3(file_name, title)
