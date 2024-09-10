@@ -1,4 +1,6 @@
 /Music
-1.ico
 /.idea/
 /venv/
+*.env
+*.exe
+*.ico
