@@ -38,13 +38,18 @@ class Spotify:
         search_term = search_term.replace("\"", r'\"')
         search_term = search_term.replace("&", "\&")
 
-        print(search_term + " (Lyric video)")
-
+        print(search_term)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             videosSearch = VideosSearch(search_term + " (Lyric video)", limit=5)
             result = videosSearch.result()["result"][0]
-            # print(result["link"], result["duration"], result["title"])
-            ydl.download(result["link"])
+
+            if track_data['track_name'] in result["title"]:
+                # print(result["link"], result["duration"], result["title"])
+                ydl.download(result["link"])
+            else:
+                videosSearch = VideosSearch(search_term, limit=5)
+                result = videosSearch.result()["result"][0]
+                ydl.download(result["link"])
 
     def _get_track_data(self, track_id):
         url = f"{self.spotify_base_url}/tracks/{track_id}"
