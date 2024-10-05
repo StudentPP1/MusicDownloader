@@ -96,7 +96,7 @@ class Spotify:
         audiofile.tag.save()
 
         os.rename(f"{file_mp3}", f"{track_name}.mp3")
-        location = shutil.move(f"{track_name}.mp3", f"{destination_path}\\{track_name}.mp3")
+        location = shutil.move(rf"{track_name}.mp3", rf"{destination_path}\\{track_name}.mp3")
         print(f"Done: {location}")
 
     def download_playlist(self, url):

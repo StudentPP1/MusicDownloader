@@ -2,9 +2,9 @@ import os
 import yt_dlp
 import eyed3
 import requests
-import re
 from pytube import Playlist
 import shutil
+import re
 from urllib import request as rq
 from utils.const import ydl_opts, destination_path
 
@@ -13,38 +13,35 @@ class YouTube:
     def __init__(self):
         pass
 
-    def _load_metadata_to_mp3(self, file_mp3, metadata):
-        audiofile = eyed3.load(file_mp3)
-        if audiofile.tag == None:
-            audiofile.initTag()
+    def _load_metadata_to_mp3(self, file_mp3, metadata, url):
+        audio_file = eyed3.load(file_mp3)
+        if audio_file.tag == None:
+            audio_file.initTag()
 
-        # Add basic tags
-        title = metadata["track_name"]
-        artist = metadata["artist_name"]
-        track_name = f"{artist} - {title}"
 
-        audiofile.tag.title = metadata["track_name"]
-        audiofile.tag.album = metadata["album_name"]
-        audiofile.tag.artist = metadata["artist_name"]
-        audiofile.tag.release_date = metadata["album_date"]
-        audiofile.tag.track_num = metadata["track_number"]
+        video_id = url[url.index("=") + 1:]
+        title = re.sub('[!@#$<>:\'\"\\/|*]', '', metadata["title"]) 
+        with open("img.jpg", 'wb') as f:
+            img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
+            f.write(img)
 
-        album_art = rq.urlopen(metadata["album_art"]).read()
-        audiofile.tag.images.set(3, album_art, "image/jpeg")
-        audiofile.tag.save()
+        audio_file.tag.title = title.strip()
+        audio_file.tag.images.set(3, open("img.jpg", 'rb').read(), 'image/jpeg')
 
-        os.rename(f"{file_mp3}", f"{track_name}.mp3")
-        return f"{track_name}.mp3"
+        audio_file.tag.save()
+
+        os.rename(f"{file_mp3}", f"{title}.mp3")
+        return f"{title}.mp3"
 
     def download_track(self, url):
         print("Downloading track...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             metadata = ydl.extract_info(url, download=False)
             ydl.download([url])
-
+  
         ready_to_convert = False
         download_file = None
-
+        
         while not ready_to_convert:
             for file in os.listdir():
                 if file.endswith(".mp3"):
@@ -52,9 +49,9 @@ class YouTube:
                     download_file = file
 
         print("Loading metadata to audio...")
-        audio = self._load_metadata_to_mp3(download_file, metadata)
+        audio = self._load_metadata_to_mp3(download_file, metadata, url)
 
-        location = shutil.move(audio, f"{destination_path}\\{audio}")
+        location = shutil.move(rf"{audio}", rf"{destination_path}\\{audio}")
         print(f"Done: {location}")
 
     def download_playlist(self, url):
