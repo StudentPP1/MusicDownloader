@@ -6,12 +6,10 @@ Clone the repository:
 ```
 git clone https://github.com/StudentPP1/YouTubeDownloader.git
 ```
-
 Install the required packages:
 ```
 pip install -r requirements.txt
 ```
-
 run:
 ```
 python main.py

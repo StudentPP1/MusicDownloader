@@ -18,7 +18,6 @@ class YouTube:
         if audio_file.tag == None:
             audio_file.initTag()
 
-
         video_id = url[url.index("=") + 1:]
         title = re.sub('[!@#$<>:\'\"\\/|*]', '', metadata["title"]) 
         with open("img.jpg", 'wb') as f:
