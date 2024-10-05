@@ -4,6 +4,7 @@
 *.exe
 *.ico
 *.jpg
+/build/main/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
