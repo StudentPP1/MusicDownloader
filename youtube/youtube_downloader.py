@@ -1,4 +1,5 @@
 import os
+import string
 import yt_dlp
 import eyed3
 import requests
@@ -19,7 +20,8 @@ class YouTube:
             audio_file.initTag()
 
         video_id = url[url.index("=") + 1:]
-        title = re.sub('[!@#$<>:\'\"\\/|*]', '', metadata["title"]) 
+        title = re.sub('[^A-z0-9 ]', '', metadata["title"]) 
+    
         with open("img.jpg", 'wb') as f:
             img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
             f.write(img)
@@ -28,9 +30,10 @@ class YouTube:
         audio_file.tag.images.set(3, open("img.jpg", 'rb').read(), 'image/jpeg')
 
         audio_file.tag.save()
-
-        os.rename(f"{file_mp3}", f"{title}.mp3")
-        return f"{title}.mp3"
+        old_name = file_mp3
+        new_name = title + '.mp3'
+        os.rename(old_name, new_name)
+        return new_name
 
     def download_track(self, url):
         print("Downloading track...")
