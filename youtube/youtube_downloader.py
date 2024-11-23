@@ -20,7 +20,7 @@ class YouTube:
             audio_file.initTag()
 
         video_id = url[url.index("=") + 1:]
-        title = re.sub('[^A-z0-9 ]', '', metadata["title"]) 
+        title = re.sub('[^а-яА-ЯA-z0-9 ]', '', metadata["title"]) 
     
         with open("img.jpg", 'wb') as f:
             img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
