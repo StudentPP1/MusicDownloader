@@ -11,6 +11,8 @@ from utils.const import ydl_opts, destination_path
 
 
 class YouTube:
+    SPLIT_LETTER = "["
+
     def __init__(self):
         pass
 
@@ -20,7 +22,7 @@ class YouTube:
             audio_file.initTag()
 
         video_id = url[url.index("=") + 1:]
-        title = re.sub('[^а-яА-ЯA-z0-9 ]', '', metadata["title"]) 
+        title = file_mp3.split(self.SPLIT_LETTER)[0].strip()
     
         with open("img.jpg", 'wb') as f:
             img = requests.get(f'https://i.ytimg.com/vi/{video_id}/hqdefault.jpg').content
@@ -30,9 +32,8 @@ class YouTube:
         audio_file.tag.images.set(3, open("img.jpg", 'rb').read(), 'image/jpeg')
 
         audio_file.tag.save()
-        old_name = file_mp3
         new_name = title + '.mp3'
-        os.rename(old_name, new_name)
+        os.rename(file_mp3, new_name)
         return new_name
 
     def download_track(self, url):
