@@ -19,6 +19,7 @@ build/
 develop-eggs/
 dist/
 eggs/
+*.spec
 lib/
 lib64/
 parts/
