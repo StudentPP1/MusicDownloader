@@ -5,6 +5,8 @@
 *.ico
 *.jpg
 /build/main/
+.venv/
+token.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
