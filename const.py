@@ -6,6 +6,7 @@ from spotipy import SpotifyClientCredentials
 load_dotenv()
 
 ydl_opts = {
+    "cookiefile": "cookies.txt",
     "format": "bestaudio/best",
     "ignoreerrors": True,
     "postprocessors": [
@@ -15,13 +16,15 @@ ydl_opts = {
             "preferredquality": "320",
         }
     ],
-    "ffmpeg_location": os.getenv("FFMPEG_LOCATION")}
+    "ffmpeg_location": os.getenv("FFMPEG_LOCATION"),
+}
 
 destination_path = "Music"
 client_id = os.getenv("CLIENT_ID")
 client_secret = os.getenv("SECRET_ID")
 
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-    client_id=os.getenv("CLIENT_ID"),
-    client_secret=os.getenv("SECRET_ID")
-))
+sp = spotipy.Spotify(
+    auth_manager=SpotifyClientCredentials(
+        client_id=os.getenv("CLIENT_ID"), client_secret=os.getenv("SECRET_ID")
+    )
+)

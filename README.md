@@ -19,7 +19,11 @@ The downloaded tracks will be saved as `.mp3` with metadata and album covers.
    pip install -r requirements.txt
    ```
 
-3. **Set up environment variables:**
+3. **Download cookies.txt from YouTube:**
+   - Download extension ([chrome](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1))
+   - Copy `cookies.txt` to source dir
+
+4. **Set up environment variables:**
 
    Create a `.env` file in the project root with the following variables:
 
