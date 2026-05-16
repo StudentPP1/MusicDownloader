@@ -31,7 +31,8 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
+.vscode
+.mypy_cache/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

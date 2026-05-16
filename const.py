@@ -1,9 +1,7 @@
 import os
-import spotipy
-from dotenv import load_dotenv
-from spotipy import SpotifyClientCredentials
+import dotenv
 
-load_dotenv()
+dotenv.load_dotenv()
 
 ydl_opts = {
     "cookiefile": "cookies.txt",
@@ -20,11 +18,3 @@ ydl_opts = {
 }
 
 destination_path = "Music"
-client_id = os.getenv("CLIENT_ID")
-client_secret = os.getenv("SECRET_ID")
-
-sp = spotipy.Spotify(
-    auth_manager=SpotifyClientCredentials(
-        client_id=os.getenv("CLIENT_ID"), client_secret=os.getenv("SECRET_ID")
-    )
-)
